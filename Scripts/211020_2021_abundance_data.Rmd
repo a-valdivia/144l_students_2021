@@ -1,0 +1,140 @@
+---
+title: "211020_2021_abundance_data"
+author: "Alessandra Valdivia"
+date: "10/20/2021"
+output: github_document
+---
+# Objective
+
+In this document, bacterial abundance data from **individual bottles** in the 2021 Microbial DOC Remineralization Bioassay is processed, QC'd, and analyzed. This experiment includes four treatments (1) Control (2) Addition of Kelp Exudate (3) Addition of Kelp Exudate, Nitrate, Phosphate (4) Addition of Glucose, Nitrate, and Phosphate with two bottles for each treatment. The purpose of this experiment was to see how different treatments affect the bacterial populations.
+
+First Step: load packages necessary to analyze our data
+```{r load packages, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(readxl)
+library(lubridate)
+```
+
+# Import Data
+
+```{r import data}
+excel_sheets("~/Documents/EEMB 144 + 144L/git-related business/144l_students_2021/Input_Data/144L_2021_BactAbund.xlsx")
+
+metadata <- read_excel("~/Documents/EEMB 144 + 144L/git-related business/144l_students_2021/Input_Data/144L_2021_BactAbund.xlsx", sheet = "Metadata")
+glimpse(metadata)
+
+data <- read_excel("~/Documents/EEMB 144 + 144L/git-related business/144l_students_2021/Input_Data/144L_2021_BactAbund.xlsx", sheet = "Data")
+glimpse(data)
+
+joined <- left_join(metadata, data) #attach data to metadata
+#joins right dataset to the left one by using variables that are the same across dataframes
+glimpse(joined)
+```
+
+# Prepare Data
+
+We must convert the Date and Time column values from characters to dates, add columns with time elapsed for each treatment, and convert to cells/L because it will help match up with the TOC data later. We will then subset the data for the variables of interest and drop NA values.
+
+```{r prepare data}
+cells <- joined %>%
+  mutate(Datetime = ymd_hm(Datetime), #splits apart Datetime as specified
+  cells_L = as.numeric(all_cells_uL) * 1000000) %>% #converts cells per microliter into cells per liter
+  group_by(Treatment, Bottle) %>%
+#group our dataset so that we can calculate the time elapsed properly
+  mutate(interv = interval(first(Datetime), Datetime),
+         s = as.numeric(interv),
+         hours = s/3600,
+         days = hours/24) %>%
+  ungroup () %>%
+  select(Experiment:DNA_Sample, cells_L, hours, days) %>%
+  drop_na(cells_L)
+glimpse(cells)
+```
+# Plot Growth Curves
+
+Now, we will plot growth curves for each bottle. We need cell abundance and days data.
+
+First, let's set some aesthetics for our plot. Then we'll use ggplot to visualize the data. 
+
+```{r growth curves}
+#assign hex colors to our different treatments
+custom.colors <- c("Control" = "#337EB8", "Kelp Exudate" = "#4DAF4A", "Kelp Exudate_Nitrate_Phosphate" = "#E41A1C", "Glucose_Nitrate_Phosphate" = "#FF7F00")
+
+#assign levels to control what order things appear in the legend
+levels <- c("Control", "Kelp Exudate", "Kelp Exudate_Nitrate_Phosphate", "Glucose_Nitrate_Phosphate")
+
+#now we'll use ggplot to visualize the data.
+
+cells %>%
+  mutate(dna = ifelse(DNA_Sample == T, "*", NA)) %>%
+  ggplot(aes(x=days, y=cells_L, group = interaction(Treatment,Bottle))) +
+  geom_line(aes(color = factor(Treatment, levels = levels)), size = 1) +
+  geom_point(aes(fill = factor(Treatment, levels = levels)), size = 3, color = "black", shape = 21) +
+  geom_text(aes(label = dna), size = 12, color = "#E41A1C") +
+  labs(x = "Days", y = expression(paste("Cells, L"^-1)), fill = "") +
+  guides (color = "none") + 
+  scale_color_manual(values = custom.colors) + 
+  scale_fill_manual(values = custom.colors) + 
+  theme_bw()
+```
+ 
+# Next Steps
+
+We can calculate: 
+
+- total change in cells from initial conditions to the end of the experiment,
+- specific growth rate as the slope of ln(abundance) vs time during exponential growth phase,
+- doubling time as ln(2) divided by the specific growth rate, 
+- and mean of each of these parameters across each treatment. 
+
+First, we need to determine **where** exponential growth is occurring in each of our bottles, if it does. To do this, we'll plot ln(abundance) vs time. 
+
+# Identify exponential phase of growth in our remin experiments
+
+```{r}
+ln_cells <- cells %>%
+  group_by(Treatment, Bottle) %>%
+  mutate(ln_cells = log(cells_L), #note that log(x) gives the natural log of x
+         diff_ln_cells = ln_cells - lag(ln_cells, default = first(ln_cells)))
+```
+
+## Plot newly calculated data!
+
+```{r fig.height=6, fig.width=8}
+ln_cells %>%
+  mutate(dna = ifelse(DNA_Sample == T, "*", NA)) %>%
+  ggplot(aes(x=days, y=diff_ln_cells, group = interaction(Treatment,Bottle))) + 
+  geom_line(aes(color = factor(Treatment, levels = levels)), size = 1) +
+  geom_point(aes(fill = factor(Treatment, levels = levels)), size = 3, color = "black", shape = 21) +
+  geom_text(aes(label = dna), size = 12, color = "#E41A1C") +
+  labs(x = "Days", y = expression(paste("∆ln cells, L"^-1)), fill = "") +
+  guides(color = "none") +
+  scale_color_manual(values = custom.colors) + 
+  scale_fill_manual(values = custom.colors) +
+  facet_wrap("Bottle", ncol =2) +
+  theme_bw() 
+```
+
+Exponential growth seems to be occurring right at the beginning of the experiment between 0-1 days for most of the bottles. 
+
+We will try plotting ln_cells to see if that can help us identify exponential growth in the control a little better. 
+
+```{r fig.height=6, fig.width=8}
+ln_cells %>%
+  mutate(dna = ifelse(DNA_Sample == T, "*", NA)) %>%
+  ggplot(aes(x=days, y=ln_cells, group = interaction(Treatment,Bottle))) + 
+  geom_line(aes(color = factor(Treatment, levels = levels)), size = 1) +
+  geom_point(aes(fill = factor(Treatment, levels = levels)), size = 3, color = "black", shape = 21) +
+  geom_text(aes(label = dna), size = 12, color = "#E41A1C") +
+  labs(x = "Days", y = expression(paste("ln cells, L"^-1)), fill = "") +
+  guides(color = "none") +
+  scale_color_manual(values = custom.colors) + 
+  scale_fill_manual(values = custom.colors) +
+  facet_wrap("Bottle", ncol =2) +
+  theme_bw()
+
+```
+
+# Summary
+
+In this document, we were able to plot growth curves for each of the different treatments and individual bottles. Using these plots and data, we were able to identify the regions in which exponential growth is occurring. Based on the plots above, exponential growth occurs within the first day of the treatment. Some data points are missing due to the sticker labels falling off of the cryovials in the liquid nitrogen. To account for this error, flow cytometry will be run again.
