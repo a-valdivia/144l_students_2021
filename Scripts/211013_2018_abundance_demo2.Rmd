@@ -7,7 +7,7 @@ output: github_document
 
 # Goal
 
-This document shows hot **individual bottle** bacterial abundance data from 2018 remineralization experiments were processed, QC'd and analyzed. It also provides an intro to data processing and analysis with Rstudio and R Markdown.
+This document shows how **individual bottle** bacterial abundance data from 2018 remineralization experiments were processed, QC'd and analyzed. It also provides an intro to data processing and analysis with Rstudio and R Markdown.
 
 # Intro to R Markdown
 
@@ -98,7 +98,7 @@ We can calculate:
 
 -total change in cells from initial conditions to the end of the experiment.
 -specific growth rate as the slope of ln(abundance) v time during exponential growth phase.
--doubling time as ln(2) divided by the spefici growth rate.
+-doubling time as ln(2) divided by the specific growth rate.
 -mean of each of these parameters across each treatment.
 
 1st, we need to determine **where** exponential growth is occurring in each of our bottles, if it does. To do this, we'll plot ln(abundance) vs time. 

@@ -6,12 +6,13 @@ Alessandra Valdivia
 # Objective
 
 In this document, bacterial abundance data from **individual bottles**
-in the 2021 Microbial DOC Remineralization Bioassay is processed, QC’d,
+in the 2021 Microbial DOC Remineralization Bioassay are processed, QC’d,
 and analyzed. This experiment includes four treatments (1) Control (2)
-Addition of Kelp Exudate (3) Addition of Kelp Exudate, Nitrate,
+Addition of Kelp Exudate (3) Addition of Kelp Exudate, Nitrate, and
 Phosphate (4) Addition of Glucose, Nitrate, and Phosphate with two
-bottles for each treatment. The purpose of this experiment was to see
-how different treatments affect the bacterial populations.
+bottles for each treatment. The purpose of this experiment is to see how
+different conditions affect the size and composition of bacterial
+populations.
 
 First Step: load packages necessary to analyze our data
 
@@ -119,11 +120,6 @@ cells <- joined %>%
   ungroup () %>%
   select(Experiment:DNA_Sample, cells_L, hours, days) %>%
   drop_na(cells_L)
-```
-
-    ## Warning in mask$eval_all_mutate(quo): NAs introduced by coercion
-
-``` r
 glimpse(cells)
 ```
 
@@ -178,8 +174,6 @@ cells %>%
   theme_bw()
 ```
 
-    ## Warning: Removed 40 rows containing missing values (geom_text).
-
 ![](211020_2021_abundance_data_files/figure-gfm/growth%20curves-1.png)<!-- -->
 
 # Next Steps
@@ -223,8 +217,6 @@ ln_cells %>%
   theme_bw() 
 ```
 
-    ## Warning: Removed 40 rows containing missing values (geom_text).
-
 ![](211020_2021_abundance_data_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 Exponential growth seems to be occurring right at the beginning of the
@@ -247,8 +239,6 @@ ln_cells %>%
   facet_wrap("Bottle", ncol =2) +
   theme_bw()
 ```
-
-    ## Warning: Removed 40 rows containing missing values (geom_text).
 
 ![](211020_2021_abundance_data_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
