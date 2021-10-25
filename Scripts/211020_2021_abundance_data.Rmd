@@ -35,7 +35,7 @@ glimpse(joined)
 
 We must convert the Date and Time column values from characters to dates, add columns with time elapsed for each treatment, and convert to cells/L because it will help match up with the TOC data later. We will then subset the data for the variables of interest and drop NA values.
 
-```{r prepare data}
+```{r prepare data, message=FALSE, warning=FALSE}
 cells <- joined %>%
   mutate(Datetime = ymd_hm(Datetime), #splits apart Datetime as specified
   cells_L = as.numeric(all_cells_uL) * 1000000) %>% #converts cells per microliter into cells per liter
@@ -56,7 +56,7 @@ Now, we will plot growth curves for each bottle. We need cell abundance and days
 
 First, let's set some aesthetics for our plot. Then we'll use ggplot to visualize the data. 
 
-```{r growth curves}
+```{r growth curves, message=FALSE, warning=FALSE}
 #assign hex colors to our different treatments
 custom.colors <- c("Control" = "#337EB8", "Kelp Exudate" = "#4DAF4A", "Kelp Exudate_Nitrate_Phosphate" = "#E41A1C", "Glucose_Nitrate_Phosphate" = "#FF7F00")
 
@@ -91,7 +91,7 @@ First, we need to determine **where** exponential growth is occurring in each of
 
 # Identify exponential phase of growth in our remin experiments
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 ln_cells <- cells %>%
   group_by(Treatment, Bottle) %>%
   mutate(ln_cells = log(cells_L), #note that log(x) gives the natural log of x
@@ -100,7 +100,7 @@ ln_cells <- cells %>%
 
 ## Plot newly calculated data!
 
-```{r fig.height=6, fig.width=8}
+```{r fig.height=6, fig.width=8, message=FALSE, warning=FALSE}
 ln_cells %>%
   mutate(dna = ifelse(DNA_Sample == T, "*", NA)) %>%
   ggplot(aes(x=days, y=diff_ln_cells, group = interaction(Treatment,Bottle))) + 
@@ -119,7 +119,7 @@ Exponential growth seems to be occurring right at the beginning of the experimen
 
 We will try plotting ln_cells to see if that can help us identify exponential growth in the control a little better. 
 
-```{r fig.height=6, fig.width=8}
+```{r fig.height=6, fig.width=8, message=FALSE, warning=FALSE}
 ln_cells %>%
   mutate(dna = ifelse(DNA_Sample == T, "*", NA)) %>%
   ggplot(aes(x=days, y=ln_cells, group = interaction(Treatment,Bottle))) + 
