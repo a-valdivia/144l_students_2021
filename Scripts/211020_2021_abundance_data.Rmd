@@ -138,3 +138,5 @@ ln_cells %>%
 # Summary
 
 In this document, we were able to plot growth curves for each of the different treatments and individual bottles. Using these plots and data, we were able to identify the regions in which exponential growth is occurring. Based on the plots above, exponential growth occurs within the first day of the treatment. Some data points are missing due to the sticker labels falling off of the cryovials in the liquid nitrogen. To account for this error, flow cytometry will be run again.
+
+weeeee
