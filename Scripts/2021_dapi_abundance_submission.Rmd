@@ -44,7 +44,11 @@ Complete: prepare data, plot growth curves for Cells_L and Cell Biovolume data A
 Convert the Date and Time column values from characters to dates, add columns with time elapsed for each treatment, and convert to cells/L because it will help us match up with the TOC data later. Also drop NA values.
 
 ```{r}
-#insert your code here
+# convert Date and Time column values from characters to dates
+cells <- joined %>%
+  mutate(Datetime = ymd_hm(Datetime), #splits apart Datetime as specified
+  cells_L = as.numeric(all_cells_uL) * 1000000) %>% #converts cells per microliter into cells per liter
+  group_by(Treatment, Bottle) %>%
 ```
 
 
