@@ -101,7 +101,7 @@ A1: The GNP treatment shows the largest increase in cell abundance over the cour
 However, the Kelp Exudate + NP shows a slightly smaller oxygen drawdown than the Kelp Exudate treatment even though the Kelp Exudate + NP has a higher cell abundance. Several hypotheses come to mind for the discrepancy between cell abundance and oxygen drawdown for these two treatments. Perhaps the Kelp Exudate + NP is more efficient at using the oxygen it takes in and therefore requires less oxygen to complete similar tasks. For example, perhaps the added nitrate and phosphate could serve as resources that allow the cell to take more efficient biosynthesis pathways that don't require as much of an input of resources. Alternatively, this could be due to the bacterial community composition. Perhaps there was a bacterial species that dominated the Kelp Exudate + NP that required less oxygen to grow. 
 
 Oxygen Drawdown: 
-![](~/Downloads/144l_students_2021-main/Input_Data/week4/EEMB144_remin_autoBOD.png)
+![](EEMB144_remin_autoBOD.png)
 
 ## Cell Biovolume
 ```{r}

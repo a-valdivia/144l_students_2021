@@ -255,8 +255,7 @@ due to the bacterial community composition. Perhaps there was a
 bacterial species that dominated the Kelp Exudate + NP that required
 less oxygen to grow.
 
-Oxygen Drawdown:
-![](~/Downloads/144l_students_2021-main/Input_Data/week4/EEMB144_remin_autoBOD.png)
+Oxygen Drawdown: ![](EEMB144_remin_autoBOD.png)
 
 ## Cell Biovolume
 
